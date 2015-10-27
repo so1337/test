@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en" ng-app="ListApp">
+<head>
+  <meta charset="utf-8">
+  <title>Google Phone Gallery</title>
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+
+
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/ui.min.js"></script>
+</head>
+<body ng-controller="MainListCtrl" ng-init="scrl = false;">
+<div style="margin:0 auto;width:400px;">
+  <span>Filter in strings:</span>
+  <input type="text"  ng-model="searchText" placeholder="Type 'n' filter">
+  <br>
+  <span >Age filter:</span>
+  <button ng-click="filterModelMin.age=0;filterModelMax.age=10;">0-10</button>
+  <button ng-click="filterModelMin.age=10;filterModelMax.age=20;">10-20</button>
+  <button ng-click="filterModelMin.age=21;filterModelMax.age=Number.MAX_VALUE;">20+</button>
+  <button ng-click="filterModelMin.age=Number.MIN_VALUE;filterModelMax.age=Number.MAX_VALUE;">disable</button>
+
+  <br>
+  <span>Sort by:</span>
+  <button ng-click="order='age'">Age</button>
+  <button ng-click="order='fn'">First Name</button>
+  <button ng-click="order='ln'">Last Name</button>
+  <button ng-click="order='mail'">Mail</button>
+  <button ng-click="order='id'">ID</button>
+
+  <br>
+  <button ng-click="scrl = !scrl" >
+    Toggle Scroll
+  </button>
+  <span ng-show="scrl">
+  now :Inifinte
+  </span>
+  <span ng-show="!scrl" >
+    now: Pagination
+  </span>
+</div>
+<div   scroll="loadMore()" >
+
+<div ng-model="list" ng-repeat="user in filteredUsers | filter:byRange('age', filterModelMin.age, filterModelMax.age) |filter:searchText |orderBy:order"  style="margin:50px;">
+  <div style="border:1px solid black;padding:20px;width:500px;margin:0 auto;">
+    <span>Id : {{user.id}} <input type="text" ng-model="temp.id" ng-show="user.edit"></span>
+    <p>First name : {{user.fn}} <input type="text" ng-model="temp.fn" ng-show="user.edit"></p>
+    <p>Last name : {{user.ln}} <input type="text" ng-model="temp.ln" ng-show="user.edit"></p>
+    <p>Email : {{user.mail}} <input type="text" ng-model="temp.mail" ng-show="user.edit"></p>
+    <p>Age: {{user.age}} <input type="text" ng-model="temp.age" ng-show="user.edit"></p>
+
+    <button ng-click="user=temp;user.edit=false" ng-show="user.edit">Save </button>
+    <button ng-click="user.edit=true">Edit me!</button>
+    <button ng-click="modal=true">Edit me Modal!</button>
+    <button ng-click="remove(user)">Delete me!</button>
+
+    <div class="mdl"  style="position:fixed;top:30%;left:0;width:500px;padding:50px; background-color:black;" ng-show="modal">
+      <style>
+      .mdl span,.mdl p{
+        color:white;
+        }
+        .mdl button,.mdl input{color:black;}</style>
+      <span>Id : {{user.id}} <input type="text" ng-model="temp.id" ><span>
+      <p>First name : {{user.fn}} <input type="text" ng-model="temp.fn"></p>
+      <p>Last name : {{user.ln}} <input type="text" ng-model="temp.ln" ></p>
+      <p>Email : {{user.mail}} <input type="text" ng-model="temp.mail" ></p>
+      <p>Age: {{user.age}} <input type="text" ng-model="temp.age" </p>
+      <button ng-click="user=temp;modal=false" >Save </button>
+      <button ng-click="modal=false">Cancel </button>
+    </div>
+  </div>
+</div>
+</div>
+<div style="margin:0 auto;position:fixed;bottom:0;left:0;right:0;">
+  <uib-pagination
+  ng-show="!scrl"
+  ng-model="currentPage"
+  total-items="users.length"
+  max-size="maxSize"
+  boundary-links="true">
+</uib-pagination>
+</div>
+</body>
+</html>
